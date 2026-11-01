@@ -1,0 +1,84 @@
+<!doctype html><canvas id=c></canvas><script>
+const q=new URLSearchParams(location.search),W=+q.get('w')||2200,H=Math.round(W*1000/1920);
+const list=q.get('f').split(',').map(Number);
+const cv=document.getElementById('c');cv.width=W;cv.height=H;
+const gl=cv.getContext('webgl2',{alpha:true,premultipliedAlpha:false,preserveDrawingBuffer:true,antialias:false});
+const log=m=>fetch('/log',{method:'POST',body:String(m)});
+const deg=d=>d*Math.PI/180;
+const sm=t=>t*t*(3-2*t);
+const track=(k,f)=>{if(f<=k[0][0])return k[0][1];for(let i=1;i<k.length;i++)if(f<=k[i][0]){const t=(f-k[i-1][0])/(k[i][0]-k[i-1][0]);return k[i-1][1]+(k[i][1]-k[i-1][1])*sm(t)}return k[k.length-1][1]};
+function params(f){return{
+ yaw:deg(track([[46,0],[100,-34],[125,-34],[150,-31],[182,-11],[215,2],[248,16],[268,30],[299,30]],f)),
+ pitch:deg(track([[0,24],[36,0],[46,0],[100,-8],[150,-8],[182,-3],[215,-3],[268,-8],[299,-8]],f)),
+ scale:track([[0,.84],[36,1],[46,1],[100,1.1],[150,1.1],[182,1],[215,.93],[248,.96],[268,1.02],[299,1.02]],f),
+ posY:track([[0,-.46],[36,0]],f),
+ flap:track([[100,0],[125,1],[150,1],[176,0],[268,0],[296,1]],f),
+ glow:track([[100,0],[122,1],[150,1],[170,0],[268,0],[292,1]],f),
+ xray:track([[150,0],[182,1],[248,1],[268,0]],f),
+ ghost:track([[182,1],[210,.0],[222,.0],[248,1]],f),
+ expl:track([[180,0],[215,1],[222,1],[250,0]],f),
+ relight:track([[40,0],[60,1]],f),
+}}
+const O={blower:e=>[-.17-.42*e,-.03-.02*e,.03+.24*e],motor:e=>[.70+.36*e,-.03,.03+.26*e],coil:e=>[-.08,.07+.40*e,-.02-.05*e],pcb:e=>[.74+.42*e,.11+.44*e,.08+.16*e]};
+function project(p,P){ // object space to 0-1 frame coordinates
+ let [x,y,z]=p;let c=Math.cos(P.yaw),s=Math.sin(P.yaw);[x,z]=[c*x-s*z,s*x+c*z];
+ c=Math.cos(P.pitch);s=Math.sin(P.pitch);[y,z]=[c*y-s*z,s*y+c*z];y+=P.posY;
+ const CAMD=9,HW=1.49,zf=CAMD-.21,k=zf*P.scale/(CAMD-z)/HW,asp=W/H;
+ return[+((x*k+1)/2).toFixed(4),+((1-y*k*asp)/2).toFixed(4)];
+}
+(async()=>{
+ if(q.get('anchors')){const A={vent:{},parts:{}};
+  for(let f=100;f<300;f+=4){const P=params(f),l=project([-.8,-.25,.2],P),r=project([.8,-.25,.2],P),m=project([0,-.25,.2],P),d=project([0,-.75,.75],P);A.vent[f]=[...l,...r,+(d[0]-m[0]).toFixed(4),+(d[1]-m[1]).toFixed(4)]}
+  for(let f=180;f<=252;f+=4){const P=params(f);A.parts[f]=[...project(O.blower(P.expl).map((v,i)=>v+[0,.14,.0][i]),P),...project(O.motor(P.expl).map((v,i)=>v+[0,.16,0][i]),P),...project(O.coil(P.expl).map((v,i)=>v+[0,.2,0][i]),P),...project(O.pcb(P.expl).map((v,i)=>v+[0,.1,0][i]),P)]}
+  A.live={};for(let f=150;f<=268;f+=4){const P=params(f);A.live[f]=[+P.yaw.toFixed(4),+P.pitch.toFixed(4),+P.scale.toFixed(4),+P.expl.toFixed(4)]}
+  await fetch('/frame/anchors',{method:'POST',body:JSON.stringify(A)});await fetch('/done',{method:'POST',body:'ok'});return}
+ const src=await (await fetch('shader.glsl')).text();
+ gl.getExtension('EXT_color_buffer_float');
+ cv.addEventListener('webglcontextlost',()=>log('CONTEXT LOST'));
+ const sh=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw 'compile '+gl.getShaderInfoLog(o)+' lost='+gl.isContextLost();return o};
+ const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,`#version 300 es
+ void main(){vec2 p=vec2(gl_VertexID==1?3.:-1.,gl_VertexID==2?3.:-1.);gl_Position=vec4(p,0.,1.);}`));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,src));gl.linkProgram(pr);
+ if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw 'link '+gl.getProgramInfoLog(pr)+' lost='+gl.isContextLost();await log('linked');
+ gl.useProgram(pr);gl.bindVertexArray(gl.createVertexArray());
+ const img=new Image();img.src='tex.webp';await img.decode();
+ const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);
+ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);gl.generateMipmap(gl.TEXTURE_2D);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+ const ani=gl.getExtension('EXT_texture_filter_anisotropic');if(ani)gl.texParameterf(gl.TEXTURE_2D,ani.TEXTURE_MAX_ANISOTROPY_EXT,8);
+ const u=n=>gl.getUniformLocation(pr,n);gl.uniform2f(u('uRes'),W,H);gl.uniform1i(u('uTex'),0);
+ const fbo=gl.createFramebuffer(),acc=gl.createTexture();
+ gl.bindTexture(gl.TEXTURE_2D,acc);gl.texStorage2D(gl.TEXTURE_2D,1,gl.RGBA16F,W,H);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+ gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,acc,0);
+ gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,acc);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,tex);
+ const rs=gl.createProgram();gl.attachShader(rs,sh(gl.VERTEX_SHADER,`#version 300 es
+ void main(){vec2 p=vec2(gl_VertexID==1?3.:-1.,gl_VertexID==2?3.:-1.);gl_Position=vec4(p,0.,1.);}`));gl.attachShader(rs,sh(gl.FRAGMENT_SHADER,`#version 300 es
+ precision highp float;uniform sampler2D uA;uniform float uN;out vec4 o;
+ void main(){vec4 c=texelFetch(uA,ivec2(gl_FragCoord.xy),0)/uN;vec3 s=c.a>0.?c.rgb/c.a:vec3(0.);o=vec4(pow(clamp(s,0.,1.),vec3(1./2.2)),c.a);}`));gl.linkProgram(rs);
+ const JIT=(q.get('aa')==='2')?[[.25,.25],[.75,.75]]:[[.083,.25],[.25,.75],[.417,.083],[.583,.583],[.75,.25],[.917,.75]];
+ const TX=+(q.get('tx')||8),TY=+(q.get('ty')||4);
+ gl.enable(gl.SCISSOR_TEST);
+ for(const f of list){
+  const p=params(f),t0=performance.now();
+  gl.useProgram(pr);
+  gl.uniform1f(u('uYaw'),p.yaw);gl.uniform1f(u('uPitch'),p.pitch);gl.uniform1f(u('uScale'),p.scale);gl.uniform3f(u('uPos'),0,p.posY,0);
+  gl.uniform1f(u('uFlap'),p.flap);gl.uniform1f(u('uXray'),p.xray);gl.uniform1f(u('uExpl'),p.expl);gl.uniform1f(u('uGlow'),p.glow);gl.uniform1f(u('uGhost'),p.ghost);gl.uniform1f(u('uRelight'),p.relight);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);gl.viewport(0,0,W,H);
+  gl.scissor(0,0,W,H);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE);
+  for(const j of JIT){gl.uniform2f(u('uJit'),j[0],j[1]);
+   for(let y=0;y<TY;y++)for(let x=0;x<TX;x++){
+    gl.scissor(Math.floor(x*W/TX),Math.floor(y*H/TY),Math.ceil(W/TX),Math.ceil(H/TY));
+    gl.drawArrays(gl.TRIANGLES,0,3);gl.flush();
+   }
+   gl.finish();await new Promise(r=>setTimeout(r,0));
+  }
+  gl.disable(gl.BLEND);gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.scissor(0,0,W,H);
+  gl.useProgram(rs);gl.uniform1i(gl.getUniformLocation(rs,'uA'),1);gl.uniform1f(gl.getUniformLocation(rs,'uN'),JIT.length);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+  const buf=new Uint8Array(W*H*4);gl.readPixels(0,0,W,H,gl.RGBA,gl.UNSIGNED_BYTE,buf);
+  await fetch('/frame/'+f,{method:'POST',body:buf});
+  await log(`frame ${f} ${(performance.now()-t0|0)}ms err=${gl.getError()}`);
+ }
+ await fetch('/done',{method:'POST',body:'ok'});
+})().catch(e=>{fetch('/log',{method:'POST',body:'FAIL '+e}).then(()=>fetch('/done',{method:'POST',body:'fail'}))});
+</script>

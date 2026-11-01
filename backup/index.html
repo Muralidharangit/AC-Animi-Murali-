@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#061127">
+    <meta name="description" content="Explore a split air conditioner through a smooth, scroll-driven product experience.">
+    <title>Air, in Motion — Product Experience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#experience">Skip to product experience</a>
+    <main>
+      <section class="ac-experience is-intro" id="experience" aria-label="Air conditioner product experience">
+        <img class="frame-sequence" src="img/3d-transparent/ezgif-frame-001.webp" fetchpriority="high" alt="Air conditioner animation controlled by scrolling">
+        <div class="scene-shade" aria-hidden="true"></div>
+        <div class="ambient-glow" aria-hidden="true"></div>
+
+        <header class="site-header">
+          <a class="brand" href="#experience" aria-label="Air in Motion home">
+            <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>air<span class="brand-light">/</span>motion</span>
+          </a>
+          <span class="header-caption">A new perspective on comfort</span>
+          <a class="header-link" href="#experience">Scroll to explore <span aria-hidden="true">↘</span></a>
+        </header>
+
+        <div class="frame-loading" role="status" aria-live="polite">
+          <span class="loading-dot" aria-hidden="true"></span>
+          <span class="loading-message">Preparing the experience</span>
+        </div>
+
+        <div class="intro-stage">
+          <div class="intro-content">
+            <div class="carrier-wordmark" aria-label="Carrier">
+              <span class="carrier-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span>CARRIER</span>
+            </div>
+            <p class="intro-eyebrow">A new perspective on comfort</p>
+            <h1>Meet comfort<br>in a new light.</h1>
+            <p class="intro-description">Discover the thoughtful design behind a cooler, quieter home.</p>
+            <div class="intro-scroll"><span class="scroll-cue-wheel"></span><span>SCROLL TO EXPLORE</span></div>
+          </div>
+        </div>
+
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> Comfort, reimagined</p>
+          <h1>Feel the shift<br>in every <span>breath.</span></h1>
+          <p class="hero-description">A closer look at thoughtful cooling, crafted to make every moment feel just right.</p>
+          <div class="hero-meta"><span>01 — 05</span><span class="meta-rule"></span><span>THE PRODUCT STORY</span></div>
+        </div>
+
+        <aside class="product-card" aria-label="Product highlights">
+          <div class="card-topline"><span>DESIGNED FOR COMFORT</span><span class="card-index">01</span></div>
+          <div class="card-divider"></div>
+          <p class="product-card-title">Cool air.<br>Considered design.</p>
+          <div class="card-spec"><span class="spec-icon" aria-hidden="true">✳</span><span>Efficient, even cooling</span></div>
+          <div class="card-spec"><span class="spec-icon" aria-hidden="true">↗</span><span>Quiet by design</span></div>
+        </aside>
+
+        <div class="scene-copy scene-copy--reveal" aria-hidden="true">
+          <p class="eyebrow"><span class="eyebrow-line"></span> A closer look</p>
+          <h2>Form meets<br><span>function.</span></h2>
+        </div>
+
+        <div class="scene-copy scene-copy--air" aria-hidden="true">
+          <p class="eyebrow"><span class="eyebrow-line"></span> The feeling of cool</p>
+          <h2>Comfort that<br><span>moves with you.</span></h2>
+        </div>
+
+        <div class="scene-copy scene-copy--technology" aria-hidden="true">
+          <p class="eyebrow"><span class="eyebrow-line"></span> Thought in every detail</p>
+          <h2>Made to work<br><span>beautifully.</span></h2>
+        </div>
+
+        <div class="airflow-effects" aria-hidden="true">
+          <span class="airflow-glow"></span>
+          <svg class="airflow-lines" viewBox="0 0 1200 300" preserveAspectRatio="none">
+            <path d="M80 80 C280 180 400 20 600 120 S930 220 1120 70"></path>
+            <path d="M40 145 C250 245 410 85 600 165 S920 275 1160 130"></path>
+            <path d="M130 205 C300 275 420 150 620 215 S920 300 1080 190"></path>
+          </svg>
+          <span class="air-particle air-particle--one"></span>
+          <span class="air-particle air-particle--two"></span>
+          <span class="air-particle air-particle--three"></span>
+        </div>
+
+        <div class="tech-callout tech-callout--left" aria-hidden="true">
+          <span class="callout-line"></span><span class="callout-dot"></span>
+          <span class="callout-copy"><small>ENGINEERED AIRFLOW</small><strong>Comfort, in every corner</strong></span>
+        </div>
+        <div class="tech-callout tech-callout--right" aria-hidden="true">
+          <span class="callout-line"></span><span class="callout-dot"></span>
+          <span class="callout-copy"><small>THOUGHTFUL DESIGN</small><strong>Quietly powerful</strong></span>
+        </div>
+
+        <div class="feature-card feature-card--left" aria-hidden="true">
+          <span class="feature-number">01</span><span class="feature-icon">⌁</span>
+          <span class="feature-title">Evenly distributed</span>
+          <span class="feature-caption">A more balanced feel, room to room.</span>
+        </div>
+        <div class="feature-card feature-card--right" aria-hidden="true">
+          <span class="feature-number">02</span><span class="feature-icon">◌</span>
+          <span class="feature-title">Made for everyday</span>
+          <span class="feature-caption">Comfort you can settle into.</span>
+        </div>
+
+        <div class="final-caption">
+          <p class="eyebrow"><span class="eyebrow-line"></span> Your comfort, in focus</p>
+          <h2>Room to breathe.</h2>
+          <span class="final-caption-note">DESIGNED AROUND YOU</span>
+          <a class="final-cta" href="#experience">Explore the experience again <span aria-hidden="true">↗</span></a>
+        </div>
+
+        <div class="corner-frame corner-frame--top-left" aria-hidden="true"></div>
+        <div class="corner-frame corner-frame--top-right" aria-hidden="true"></div>
+        <div class="corner-frame corner-frame--bottom-left" aria-hidden="true"></div>
+        <div class="corner-frame corner-frame--bottom-right" aria-hidden="true"></div>
+
+        <div class="experience-footer" aria-hidden="true">
+          <span class="footer-label">AIR / MOTION</span>
+          <div class="scroll-progress"><span class="scroll-progress-fill"></span></div>
+          <span class="scene-counter"><span class="counter-current">01</span><span class="counter-slash"> / </span>05</span>
+        </div>
+        <div class="scroll-cue"><span class="scroll-cue-wheel"></span><span>SCROLL TO DISCOVER</span></div>
+      </section>
+    </main>
+  </body>
+</html>

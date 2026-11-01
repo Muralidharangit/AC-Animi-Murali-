@@ -1,0 +1,701 @@
+:root {
+  color-scheme: dark;
+  --ink: #f5f8ff;
+  --muted: #dfe9f7;
+  --cyan: #66e9ff;
+  --navy: #000a2a;
+  --gutter: clamp(20px, 4.6vw, 72px);
+  --caption-top: clamp(84px, 11svh, 120px);
+  font-family: "DM Sans", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--navy);
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  overflow-x: hidden;
+  background: var(--navy);
+  color: var(--ink);
+}
+
+button,
+a {
+  color: inherit;
+  font: inherit;
+}
+
+a {
+  text-decoration: none;
+}
+
+h1,
+h2,
+p,
+ol,
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+/* Banner */
+
+.banner {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  min-height: 300px;
+  overflow: hidden;
+  --width: min(94vw, 150svh);
+  --centre: 60svh;
+  background:
+    linear-gradient(180deg, rgba(0, 8, 44, 0.62), rgba(0, 16, 84, 0.18) 62%, rgba(0, 24, 120, 0.2)),
+    var(--navy) url("img/backdrop.webp") center bottom / cover no-repeat;
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 60%, rgba(0, 12, 50, 0.72), rgba(0, 6, 28, 0.94));
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  perspective: 1500px;
+}
+
+/* The frames carry a lot of transparent margin, so this box is wider than the unit it shows. */
+.product {
+  position: absolute;
+  top: calc(var(--centre) - var(--width) * 0.2605);
+  left: 50%;
+  width: var(--width);
+  aspect-ratio: 2200 / 1146;
+  margin-left: calc(var(--width) / -2);
+  will-change: transform;
+}
+
+.hero-ac {
+  display: none;
+}
+
+.frames {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 26px 36px rgba(0, 4, 30, 0.42));
+}
+
+.bracket {
+  position: absolute;
+  width: clamp(26px, 3vw, 46px);
+  height: clamp(26px, 3vw, 46px);
+  border: 0 solid var(--cyan);
+  filter: drop-shadow(0 0 7px var(--cyan));
+  visibility: hidden;
+}
+
+.bracket--tl { top: 19%; left: 11%; border-width: 2px 0 0 2px; }
+.bracket--tr { top: 19%; right: 11%; border-width: 2px 2px 0 0; }
+.bracket--bl { bottom: 17%; left: 11%; border-width: 0 0 2px 2px; }
+.bracket--br { right: 11%; bottom: 17%; border-width: 0 2px 2px 0; }
+
+.air {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: linear-gradient(180deg, transparent 18%, #000 32%);
+  mask-image: linear-gradient(180deg, transparent 18%, #000 32%);
+  pointer-events: none;
+}
+
+/* Intro */
+
+.intro {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px var(--gutter) 64px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.brand {
+  position: relative;
+  display: block;
+  flex: none;
+  width: clamp(150px, 19vw, 240px);
+  margin-bottom: clamp(20px, 4svh, 36px);
+  transform-origin: 0 0;
+  pointer-events: auto;
+}
+
+.brand img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.brand-halo {
+  position: absolute;
+  top: -14%;
+  left: -7%;
+  width: 114%;
+  height: 128%;
+  overflow: visible;
+}
+
+.brand-halo ellipse {
+  fill: none;
+  stroke: var(--cyan);
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  filter: drop-shadow(0 0 8px var(--cyan));
+}
+
+.brand-shine {
+  position: absolute;
+  inset: 3%;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.brand-shine::after {
+  position: absolute;
+  top: -20%;
+  left: -40%;
+  width: 26%;
+  height: 140%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  content: "";
+  transform: skewX(-20deg);
+  animation: shine 4.5s ease-in-out infinite;
+}
+
+@keyframes shine {
+  0%, 55% { left: -40%; }
+  100% { left: 120%; }
+}
+
+.intro-copy {
+  max-width: 920px;
+}
+
+.eyebrow {
+  color: var(--cyan);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.intro h1,
+.caption h2,
+.finale h2 {
+  font-family: Manrope, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.intro h1 {
+  margin-top: 12px;
+  font-size: clamp(32px, min(5.2vw, 8svh), 68px);
+}
+
+.lede {
+  max-width: 560px;
+  margin: 16px auto 0;
+  color: var(--muted);
+  font-size: clamp(15px, 1.25vw, 18px);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: clamp(18px, 3.4svh, 30px);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.scroll-wheel {
+  width: 16px;
+  height: 24px;
+  border: 1px solid rgba(190, 225, 255, 0.75);
+  border-radius: 10px;
+}
+
+.scroll-wheel::after {
+  display: block;
+  width: 2px;
+  height: 5px;
+  margin: 4px auto;
+  border-radius: 2px;
+  background: var(--cyan);
+  content: "";
+  animation: scroll-tick 1.3s ease-in-out infinite;
+}
+
+@keyframes scroll-tick {
+  50% { transform: translateY(6px); opacity: 0.35; }
+}
+
+/* Captions sit above the product, one at a time */
+
+.caption {
+  position: absolute;
+  z-index: 2;
+  top: var(--caption-top);
+  right: 0;
+  left: 0;
+  padding: 0 var(--gutter);
+  text-align: center;
+  pointer-events: none;
+}
+
+.js .caption {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.caption h2 {
+  font-size: clamp(28px, min(4vw, 7svh), 56px);
+}
+
+.caption em,
+.finale em {
+  color: var(--cyan);
+  font-style: normal;
+}
+
+.caption p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.5;
+}
+
+/* Labels that follow the parts */
+
+.part-labels {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+}
+
+.part-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+}
+
+.part-label i {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 12px var(--cyan);
+}
+
+.part-label i::before {
+  position: absolute;
+  bottom: 8px;
+  left: 2px;
+  width: 1px;
+  height: 22px;
+  background: linear-gradient(0deg, var(--cyan), transparent);
+  content: "";
+}
+
+.part-label span {
+  position: absolute;
+  bottom: 26px;
+  left: 0;
+  padding: 5px 12px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(102, 233, 255, 0.46);
+  border-radius: 999px;
+  background: rgba(0, 10, 42, 0.86);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Finale: content on the left, the unit on the right */
+
+.finale {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: max(var(--gutter), calc(50% - var(--width) / 2));
+  width: min(460px, 38vw);
+  transform: translateY(-50%);
+}
+
+.js .finale-item {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.finale h2 {
+  margin-top: 12px;
+  font-size: clamp(40px, min(5.4vw, 9svh), 80px);
+}
+
+.finale .lede {
+  margin-left: 0;
+}
+
+.features {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.features li {
+  display: grid;
+  gap: 2px;
+  padding: 12px 16px;
+  border: 1px solid rgba(102, 233, 255, 0.3);
+  border-radius: 12px;
+  background: rgba(2, 18, 64, 0.62);
+  backdrop-filter: blur(10px);
+}
+
+.features strong {
+  font-family: Manrope, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.features span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 22px;
+  border: 1px solid rgba(102, 233, 255, 0.7);
+  border-radius: 999px;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+.action:hover {
+  background: rgba(102, 233, 255, 0.16);
+}
+
+.action--primary {
+  border-color: var(--cyan);
+  background: var(--cyan);
+  color: var(--navy);
+  box-shadow: 0 0 28px rgba(102, 233, 255, 0.5);
+}
+
+.action--primary:hover {
+  background: #a5f2ff;
+  box-shadow: 0 0 40px rgba(102, 233, 255, 0.75);
+}
+
+/* HUD */
+
+.hud {
+  position: absolute;
+  z-index: 4;
+  right: var(--gutter);
+  bottom: 12px;
+  left: var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.progress {
+  flex: 1;
+  height: 2px;
+  background: rgba(190, 215, 250, 0.26);
+}
+
+.progress-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: var(--cyan);
+}
+
+.skip {
+  min-height: 32px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+.skip:hover {
+  color: var(--ink);
+}
+
+/* Static page: no JS, GSAP unavailable, or reduced motion */
+
+html:not(.js) .banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+  min-height: 100svh;
+  overflow: visible;
+  padding: 48px var(--gutter);
+}
+
+html:not(.js) .intro,
+html:not(.js) .stage,
+html:not(.js) .product,
+html:not(.js) .finale {
+  position: static;
+  width: 100%;
+  margin: 0;
+  transform: none;
+}
+
+html:not(.js) .intro {
+  padding: 0;
+}
+
+html:not(.js) .stage {
+  max-width: 1100px;
+  margin-top: 32px;
+}
+
+html:not(.js) .product {
+  aspect-ratio: auto;
+}
+
+html:not(.js) .hero-ac {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+html:not(.js) .finale {
+  max-width: 560px;
+  margin-top: 40px;
+  text-align: center;
+}
+
+html:not(.js) .finale .lede {
+  margin-left: auto;
+}
+
+html:not(.js) .actions {
+  justify-content: center;
+}
+
+html:not(.js) .frames,
+html:not(.js) .air,
+html:not(.js) .shade,
+html:not(.js) .bracket,
+html:not(.js) .caption,
+html:not(.js) .part-labels,
+html:not(.js) .hud,
+html:not(.js) .scroll-cue,
+html:not(.js) .brand-halo,
+html:not(.js) .actions button {
+  display: none;
+}
+
+/* Portrait: the content stays on top with the unit beneath it */
+
+@media (max-aspect-ratio: 11/10) {
+  .banner {
+    background:
+      linear-gradient(180deg, rgba(0, 8, 44, 0.76), rgba(0, 16, 84, 0.46) 60%, rgba(0, 24, 120, 0.46)),
+      var(--navy) url("img/backdrop.webp") center bottom / cover no-repeat;
+  }
+
+  .banner {
+    --width: 144vw;
+    --centre: 58svh;
+  }
+
+  .part-label:last-child {
+    display: none;
+  }
+
+  .part-label span {
+    font-size: 12px;
+  }
+
+  .finale {
+    top: 72px;
+    right: var(--gutter);
+    left: var(--gutter);
+    width: auto;
+    transform: none;
+    text-align: center;
+  }
+
+  .finale .lede {
+    margin-left: auto;
+  }
+
+  .features {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 14px;
+    text-align: left;
+  }
+
+  .features li {
+    padding: 10px 12px;
+  }
+
+  .features strong {
+    font-size: 13px;
+  }
+
+  .features span {
+    font-size: 12px;
+  }
+
+  .actions {
+    justify-content: center;
+    margin-top: 14px;
+  }
+
+  .action {
+    min-height: 42px;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+}
+
+/* Small phones drop the cards so the unit stays clear of the content */
+
+@media (max-aspect-ratio: 11/10) and (max-height: 640px) {
+  .features,
+  .finale .lede {
+    display: none;
+  }
+
+  .action {
+    padding: 0 14px;
+    font-size: 13px;
+  }
+}
+
+/* Short landscape screens keep only the headline */
+
+@media (max-height: 520px) {
+  :root {
+    --caption-top: 56px;
+  }
+
+  .lede,
+  .caption p,
+  .features,
+  .part-label:nth-child(n + 3) {
+    display: none;
+  }
+
+  .scroll-cue {
+    margin-top: 10px;
+  }
+
+  .finale {
+    top: calc(50% + 20px);
+    left: var(--gutter);
+    width: min(460px, 40vw);
+  }
+
+  .actions button {
+    display: none;
+  }
+
+  .finale .eyebrow {
+    display: none;
+  }
+
+  .finale h2 {
+    margin-top: 0;
+  }
+
+  .actions {
+    flex-wrap: nowrap;
+    margin-top: 14px;
+  }
+
+  .action {
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
