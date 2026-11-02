@@ -1,0 +1,177 @@
+/* Left/right banner sample. Loads after style.css and is used only by bannerleft-right.html.
+   The story opens with the unit large and centred under the copy. On scroll the unit moves
+   into the right column and the copy changes on the left. */
+
+.js .banner {
+  background: radial-gradient(130% 100% at 50% -10%, #0b2f7d 0%, #06205f 38%, #03133d 72%, #020b28 100%);
+}
+
+/* The glow lives in the product box, so it travels and scales with the unit. */
+
+.js .halo {
+  top: -50%;
+  left: -35%;
+  width: 170%;
+  height: 200%;
+  background: radial-gradient(ellipse at center, rgba(70, 160, 255, 0.55) 0%, rgba(24, 104, 224, 0.34) 30%, rgba(8, 60, 170, 0.14) 52%, transparent 70%);
+}
+
+/* The unit is on show from the first screen. */
+
+.js .halo,
+.js .frames {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* First view */
+
+.js .intro {
+  justify-content: flex-start;
+  padding-top: clamp(20px, calc(var(--height) * 0.06), 56px);
+}
+
+.js .intro-copy {
+  width: 100%;
+  max-width: 980px;
+}
+
+.js .scroll-cue {
+  position: absolute;
+  right: 0;
+  bottom: 44px;
+  left: 0;
+  justify-content: center;
+  margin: 0;
+}
+
+/* Small touches shared by every scene */
+
+:where(.js) .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1px solid rgba(143, 216, 255, 0.32);
+  border-radius: 999px;
+  background: rgba(143, 216, 255, 0.08);
+  font-size: 12px;
+}
+
+:where(.js) .eyebrow::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ice);
+  box-shadow: 0 0 10px var(--ice);
+  content: "";
+}
+
+.js .intro em,
+.js .caption em,
+.js .finale em {
+  background: linear-gradient(90deg, #a9e4ff, #4fb8ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-style: normal;
+}
+
+.js .caption::before {
+  display: block;
+  width: 44px;
+  height: 3px;
+  margin-bottom: 18px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--ice), var(--sky));
+  box-shadow: 0 0 12px rgba(143, 216, 255, 0.6);
+  content: "";
+}
+
+.js .action--primary {
+  box-shadow: 0 12px 32px rgba(79, 184, 255, 0.34);
+}
+
+.js .progress-fill {
+  background: linear-gradient(90deg, var(--sky), var(--ice));
+  box-shadow: 0 0 10px rgba(143, 216, 255, 0.7);
+}
+
+/* Landscape: copy in the left column, the unit in the right */
+
+@media (min-aspect-ratio: 11/10) {
+  .js .banner {
+    --copy: min(480px, 37vw);
+    --gap: clamp(24px, 5vw, 72px);
+    --edge-x: max(var(--gutter), calc(50vw - var(--container) / 2));
+    --column: calc(100vw - var(--edge-x) * 2 - var(--copy) - var(--gap));
+    /* The closed unit fills at most 72% of its frame. */
+    --width: min(calc(var(--column) / 0.72), calc(var(--height) * 1.5));
+    --centre: calc(var(--height) * 0.49);
+  }
+
+  .js .product {
+    left: calc(100% - var(--edge-x) - var(--column) / 2);
+  }
+
+  .js .intro h1,
+  .js .intro-title {
+    font-size: clamp(26px, min(4.7vw, calc(var(--height) * 0.088)), 68px);
+  }
+
+  .js .intro .lede {
+    max-width: 640px;
+  }
+
+  .js .caption {
+    top: 0;
+    right: auto;
+    bottom: 6%;
+    left: var(--edge);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: var(--copy);
+    padding: 0;
+    text-align: left;
+  }
+
+  .js .caption h2 {
+    font-size: clamp(28px, min(3.7vw, calc(var(--height) * 0.085)), 52px);
+  }
+
+  .js .finale {
+    width: var(--copy);
+  }
+}
+
+/* Portrait: copy on top, the unit beneath it */
+
+@media (max-aspect-ratio: 11/10) {
+  .js .banner {
+    --width: min(138vw, 640px);
+  }
+
+  .js .caption::before {
+    margin: 0 auto 14px;
+  }
+
+  /* The frame is wider than a phone screen, so the brackets move in to stay on it. */
+  .js .bracket--tl,
+  .js .bracket--bl {
+    left: 16%;
+  }
+
+  .js .bracket--tr,
+  .js .bracket--br {
+    right: 16%;
+  }
+}
+
+/* Small phones drop the intro description so the unit stays clear of it */
+
+@media (max-aspect-ratio: 11/10) and (max-height: 700px) {
+  .js .intro .lede {
+    display: none;
+  }
+}
