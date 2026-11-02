@@ -439,7 +439,8 @@ ul {
   grid-area: 1 / 1;
 }
 
-.js .intro-slide:not(:first-child) {
+.js .intro-slide:not(:first-child),
+.js .brand-logo:not(:first-child) {
   visibility: hidden;
   opacity: 0;
 }
@@ -877,14 +878,46 @@ html:not(.js) .scroll-cue {
 
 @media (max-aspect-ratio: 11/10) {
   .banner {
-    --width: 144vw;
-    --centre: calc(var(--height) * 0.6);
-    --glow: 58%;
+    --width: min(152vw, 640px);
+    --centre: calc(var(--height) * 0.52);
+    --glow: 52%;
     --glow-size: 120% 74%;
   }
 
+  /* Captions: pull closer to unit, boost readability and sizing */
+  .caption {
+    top: clamp(24px, calc(var(--height) * 0.075), 68px);
+    padding: 0 20px;
+  }
+
+  .caption h2 {
+    font-size: clamp(28px, 7.5vw, 38px);
+    line-height: 1.15;
+  }
+
+  .caption p {
+    margin-top: 10px;
+    font-size: clamp(15px, 3.8vw, 17px);
+    line-height: 1.5;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Intro copy: more prominent and legible */
+  .intro h1,
+  .intro-title {
+    font-size: clamp(32px, 8.5vw, 44px);
+    line-height: 1.15;
+  }
+
+  .intro .lede {
+    font-size: clamp(15px, 3.8vw, 17px);
+    max-width: 330px;
+  }
+
   .finale {
-    top: clamp(16px, calc(var(--height) * 0.035), 32px);
+    top: clamp(20px, calc(var(--height) * 0.045), 40px);
     right: var(--gutter);
     left: var(--gutter);
     width: auto;
@@ -895,11 +928,13 @@ html:not(.js) .scroll-cue {
   }
 
   .finale h2 {
-    font-size: clamp(30px, 8vw, 44px);
+    font-size: clamp(32px, 8.2vw, 44px);
+    line-height: 1.15;
   }
 
   .finale .lede {
     margin: 10px auto 0;
+    font-size: clamp(15px, 3.8vw, 17px);
   }
 
   .features {

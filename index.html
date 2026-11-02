@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preload" as="image" href="img/carrier-logo.webp" fetchpriority="high">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.min.css?v=11">
+    <link rel="stylesheet" href="css/style.min.css?v=13">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -32,10 +32,14 @@
         "brand": [{ "@type": "Brand", "name": "Carrier" }, { "@type": "Brand", "name": "Toshiba" }]
       }
     </script>
-    <script>document.documentElement.classList.add("js");</script>
+    <script>
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      window.scrollTo(0, 0);
+      document.documentElement.classList.add("js");
+    </script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script defer src="js/script.min.js?v=11"></script>
+    <script defer src="js/script.min.js?v=12"></script>
   </head>
   <body>
     <!-- Site header, matching the live Comfort Aircon site. Its height is --header in style.css. -->

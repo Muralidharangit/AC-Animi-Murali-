@@ -1,4 +1,8 @@
 (() => {
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+  window.scrollTo(0, 0);
   const root = document.documentElement;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -763,7 +767,60 @@
     };
   }
 
+  let brandCycleCall = null;
+  let brandTimeline = null;
+  let brandCurrent = 0;
+  let introTimeline = null;
+
+  function resetBrands() {
+    if (brandCycleCall) {
+      brandCycleCall.kill();
+      brandCycleCall = null;
+    }
+    if (brandTimeline) {
+      brandTimeline.kill();
+      brandTimeline = null;
+    }
+    const logos = gsap.utils.toArray(".brand-logo");
+    const slides = gsap.utils.toArray(".intro-slide");
+    brandCurrent = 0;
+    if (logos.length) {
+      gsap.set(logos[0], { autoAlpha: 1, rotationY: 0 });
+      if (logos.length > 1) {
+        gsap.set(logos.slice(1), { autoAlpha: 0, rotationY: 90 });
+      }
+    }
+    if (slides.length) {
+      gsap.set(slides[0], { autoAlpha: 1, y: 0 });
+      if (slides.length > 1) {
+        gsap.set(slides.slice(1), { autoAlpha: 0, y: 18 });
+      }
+    }
+    if (!document.hidden && (!storyTrigger || storyTrigger.progress <= 0.01)) {
+      brandCycleCall = gsap.delayedCall(4.5, cycleNext);
+    }
+  }
+
+  function cycleNext() {
+    if (document.hidden || (storyTrigger && storyTrigger.progress > 0.01)) {
+      brandCycleCall = gsap.delayedCall(2, cycleNext);
+      return;
+    }
+    const logos = gsap.utils.toArray(".brand-logo");
+    const slides = gsap.utils.toArray(".intro-slide");
+    if (logos.length <= 1) return;
+    const coming = (brandCurrent + 1) % logos.length;
+    brandTimeline = gsap.timeline()
+      .to(logos[brandCurrent], { rotationY: -90, autoAlpha: 0, duration: 0.45, ease: "power2.in" })
+      .to(slides[brandCurrent], { autoAlpha: 0, y: -16, duration: 0.45, ease: "power2.in" }, 0)
+      .fromTo(logos[coming], { rotationY: 90, autoAlpha: 0 }, { rotationY: 0, autoAlpha: 1, duration: 0.6, ease: "back.out(1.5)" }, 0.45)
+      .fromTo(slides[coming], { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.5);
+    brandCurrent = coming;
+    brandCycleCall = gsap.delayedCall(4, cycleNext);
+  }
+
   function buildStory(portrait) {
+    const intro = document.querySelector(".intro");
     const brand = document.querySelector(".brand");
     const progressFill = document.querySelector(".progress-fill");
     const skip = document.querySelector(".skip");
@@ -786,6 +843,28 @@
         onUpdate: (trigger) => {
           progressFill.style.transform = `scaleX(${trigger.progress})`;
           skip.style.visibility = trigger.progress > 0.9 ? "hidden" : "visible";
+
+          // If scrolled into the story, kill running intro or brand rotation tweens
+          // so they cannot overwrite styles on .brand or .brand-logo
+          if (trigger.progress > 0.005) {
+            if (introTimeline && introTimeline.isActive()) {
+              introTimeline.kill();
+              introTimeline = null;
+            }
+            if (brandTimeline && brandTimeline.isActive()) {
+              brandTimeline.kill();
+              brandTimeline = null;
+            }
+            if (brandCycleCall) {
+              brandCycleCall.kill();
+              brandCycleCall = null;
+            }
+          } else if (trigger.progress <= 0.001) {
+            // User scrolled back to starting slide: reset to Carrier slide cleanly
+            if (!brandCycleCall) {
+              resetBrands();
+            }
+          }
         },
       },
     });
@@ -793,10 +872,12 @@
 
     // Hero: the intro clears, the logo settles in the corner, the unit rises.
     timeline.addLabel("hero", 0);
+    timeline.to(intro, { autoAlpha: 0, duration: 6, ease: "power1.in" }, 1);
     timeline.to(".intro-copy", { autoAlpha: 0, y: -44, duration: 5, ease: "power1.in" }, 1);
     timeline.to(".scroll-cue", { autoAlpha: 0, duration: 2 }, 0.5);
     timeline.to(".brand-halo", { autoAlpha: 0, duration: 3 }, 1);
     timeline.to(brand, { y: () => -(brand.offsetTop + brand.offsetHeight + 24), autoAlpha: 0, duration: 7, ease: "power2.in" }, 1);
+    timeline.set(intro, { display: "none" }, 7);
     timeline.to([frameCanvas, ".halo"], { autoAlpha: 1, duration: 3 }, 6);
     playFrames(timeline, 0, 36, 6, 15, "power1.out");
     playFrames(timeline, 36, 46, 15, 23);
@@ -867,27 +948,12 @@
 
   // The three brands take turns: the logo flips and its copy follows. Pauses once the story starts.
   function cycleBrands() {
-    const logos = gsap.utils.toArray(".brand-logo");
-    const slides = gsap.utils.toArray(".intro-slide");
-    let current = 0;
-    gsap.set(logos.slice(1), { autoAlpha: 0, rotationY: 90 });
-
-    function next() {
-      gsap.delayedCall(4, next);
-      if (document.hidden || storyTrigger.progress > 0.01) return;
-      const coming = (current + 1) % logos.length;
-      gsap.timeline()
-        .to(logos[current], { rotationY: -90, autoAlpha: 0, duration: 0.45, ease: "power2.in" })
-        .to(slides[current], { autoAlpha: 0, y: -16, duration: 0.45, ease: "power2.in" }, 0)
-        .fromTo(logos[coming], { rotationY: 90, autoAlpha: 0 }, { rotationY: 0, autoAlpha: 1, duration: 0.6, ease: "back.out(1.5)" }, 0.45)
-        .fromTo(slides[coming], { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.5);
-      current = coming;
-    }
-    gsap.delayedCall(4.5, next);
+    resetBrands();
   }
 
   function playIntro() {
-    gsap.timeline({ defaults: { ease: "power3.out" } })
+    if (storyTrigger && storyTrigger.progress > 0.005) return;
+    introTimeline = gsap.timeline({ defaults: { ease: "power3.out" } })
       .from(".brand", { scale: 0.7, autoAlpha: 0, duration: 0.9, ease: "back.out(1.7)" }, 0.1)
       .fromTo(".brand-halo ellipse", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.3, ease: "power2.inOut" }, 0.1)
       .from(".brand-shine", { autoAlpha: 0, duration: 0.4 }, 0.8)
@@ -932,6 +998,9 @@
   /* ---------- Start ---------- */
 
   function start() {
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
     window.scrollTo(0, 0);
     airflow = createAirflow();
     layout();
