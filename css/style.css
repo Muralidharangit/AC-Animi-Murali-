@@ -878,7 +878,8 @@ html:not(.js) .scroll-cue {
 
 @media (max-aspect-ratio: 11/10) {
   .banner {
-    --width: min(152vw, 640px);
+    /* Narrow enough that the turned unit stays on a phone screen. */
+    --width: min(138vw, 640px);
     --centre: calc(var(--height) * 0.52);
     --glow: 52%;
     --glow-size: 120% 74%;
@@ -962,6 +963,17 @@ html:not(.js) .scroll-cue {
 
   .part-label:last-child {
     display: none;
+  }
+
+  /* The frame is wider than a phone screen, so the brackets move in to stay on it. */
+  .bracket--tl,
+  .bracket--bl {
+    left: 16%;
+  }
+
+  .bracket--tr,
+  .bracket--br {
+    right: 16%;
   }
 
   .part-label span {

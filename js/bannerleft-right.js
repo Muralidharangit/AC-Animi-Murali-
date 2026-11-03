@@ -867,8 +867,10 @@
     // Hero: the intro clears and the unit glides from the centre into its own column.
     timeline.addLabel("hero", 0);
     timeline.to(intro, { autoAlpha: 0, duration: 4, ease: "power1.in" }, 1);
-    timeline.to(".intro-copy", { autoAlpha: 0, x: leaveTo, duration: 4, ease: "power1.in" }, 1);
-    timeline.to(".scroll-cue", { autoAlpha: 0, duration: 2 }, 0.5);
+    // Explicit start values: scrolling back must restore the intro in full, even if the
+    // opening animation was still running when the visitor began to scroll.
+    timeline.fromTo(".intro-copy", { autoAlpha: 1, x: 0 }, { autoAlpha: 0, x: leaveTo, duration: 4, ease: "power1.in" }, 1);
+    timeline.fromTo(".scroll-cue", { autoAlpha: 1 }, { autoAlpha: 0, duration: 2 }, 0.5);
     timeline.fromTo(camera,
       { scale: () => introPose().scale, x: () => introPose().x, y: () => introPose().y },
       { scale: 1, x: 0, y: 0, duration: 7, ease: "power2.inOut", immediateRender: false },

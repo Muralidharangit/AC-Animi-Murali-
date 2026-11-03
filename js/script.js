@@ -844,11 +844,11 @@
           progressFill.style.transform = `scaleX(${trigger.progress})`;
           skip.style.visibility = trigger.progress > 0.9 ? "hidden" : "visible";
 
-          // If scrolled into the story, kill running intro or brand rotation tweens
-          // so they cannot overwrite styles on .brand or .brand-logo
+          // Once scrolled into the story, the opening animation jumps to its end so nothing
+          // is left half-faded, and the brand rotation stops.
           if (trigger.progress > 0.005) {
-            if (introTimeline && introTimeline.isActive()) {
-              introTimeline.kill();
+            if (introTimeline) {
+              introTimeline.progress(1);
               introTimeline = null;
             }
             if (brandTimeline && brandTimeline.isActive()) {
@@ -873,10 +873,12 @@
     // Hero: the intro clears, the logo settles in the corner, the unit rises.
     timeline.addLabel("hero", 0);
     timeline.to(intro, { autoAlpha: 0, duration: 6, ease: "power1.in" }, 1);
-    timeline.to(".intro-copy", { autoAlpha: 0, y: -44, duration: 5, ease: "power1.in" }, 1);
-    timeline.to(".scroll-cue", { autoAlpha: 0, duration: 2 }, 0.5);
+    // Explicit start values: scrolling back must restore the intro in full, even if the
+    // opening animation was still running when the visitor began to scroll.
+    timeline.fromTo(".intro-copy", { autoAlpha: 1, y: 0 }, { autoAlpha: 0, y: -44, duration: 5, ease: "power1.in" }, 1);
+    timeline.fromTo(".scroll-cue", { autoAlpha: 1 }, { autoAlpha: 0, duration: 2 }, 0.5);
     timeline.to(".brand-halo", { autoAlpha: 0, duration: 3 }, 1);
-    timeline.to(brand, { y: () => -(brand.offsetTop + brand.offsetHeight + 24), autoAlpha: 0, duration: 7, ease: "power2.in" }, 1);
+    timeline.fromTo(brand, { y: 0, autoAlpha: 1 }, { y: () => -(brand.offsetTop + brand.offsetHeight + 24), autoAlpha: 0, duration: 7, ease: "power2.in" }, 1);
     timeline.set(intro, { display: "none" }, 7);
     timeline.to([frameCanvas, ".halo"], { autoAlpha: 1, duration: 3 }, 6);
     playFrames(timeline, 0, 36, 6, 15, "power1.out");
@@ -908,7 +910,8 @@
     timeline.to(state, { live: 1, duration: 3 }, 52);
     timeline.to(state, { live: 0, duration: 3.5 }, 68.5);
     timeline.to(".halo", { autoAlpha: 0, duration: 4 }, 49);
-    caption(timeline, "core", 51, 70);
+    // Stays until the finale arrives, so the reassembly is never shown without copy.
+    caption(timeline, "core", 51, 82);
     timeline.to('[data-caption="core"] p', { autoAlpha: 0, duration: 1.5 }, 58.5);
     timeline.to(".part-label", { autoAlpha: 1, duration: 1.5, stagger: 0.5 }, 60);
     timeline.to(".part-label", { autoAlpha: 0, duration: 1.2 }, 67.5);

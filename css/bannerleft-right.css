@@ -148,23 +148,8 @@
 /* Portrait: copy on top, the unit beneath it */
 
 @media (max-aspect-ratio: 11/10) {
-  .js .banner {
-    --width: min(138vw, 640px);
-  }
-
   .js .caption::before {
     margin: 0 auto 14px;
-  }
-
-  /* The frame is wider than a phone screen, so the brackets move in to stay on it. */
-  .js .bracket--tl,
-  .js .bracket--bl {
-    left: 16%;
-  }
-
-  .js .bracket--tr,
-  .js .bracket--br {
-    right: 16%;
   }
 }
 
